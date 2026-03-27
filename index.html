@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIND — Seguridad y Tecnologia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:   #07101f;
+  --navy2:  #0d1b30;
+  --blue:   #1a3a6e;
+  --orange: #f26522;
+  --org2:   #ff7a35;
+  --white:  #eef2ff;
+  --dim:    #7a8fae;
+  --dim2:   #b0bfd8;
+  --border: rgba(255,255,255,0.09);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Outfit', sans-serif; background: var(--navy); color: var(--white); overflow-x: hidden; cursor: none; }
+
+#cursor { position: fixed; width: 10px; height: 10px; background: var(--orange); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width .25s, height .25s; }
+#cursor-ring { position: fixed; width: 34px; height: 34px; border: 1.5px solid rgba(242,101,34,.45); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); }
+.scroll-line { position: fixed; top: 0; left: 0; height: 2px; background: linear-gradient(90deg, var(--orange), #1a3a6e); z-index: 300; width: 0; box-shadow: 0 0 6px var(--orange); }
+
+.orb { position: fixed; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0; }
+.orb-1 { width: 700px; height: 700px; background: rgba(26,58,110,.22); top: -250px; left: -150px; }
+.orb-2 { width: 450px; height: 450px; background: rgba(242,101,34,.08); top: 35%; right: -180px; }
+.orb-3 { width: 500px; height: 500px; background: rgba(10,22,45,.8); bottom: 0; left: 25%; }
+
+nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; padding: 18px 64px; background: rgba(7,16,31,.82); backdrop-filter: blur(24px); border-bottom: 1px solid var(--border); transition: padding .3s; }
+nav.scrolled { padding: 12px 64px; }
+.nav-logo svg { display: block; }
+.nav-links { display: flex; gap: 36px; }
+.nav-links a { font-size: 13px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; text-decoration: none; color: var(--dim); transition: color .2s; position: relative; padding-bottom: 3px; }
+.nav-links a::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: var(--orange); transform: scaleX(0); transition: transform .25s; transform-origin: left; }
+.nav-links a:hover { color: var(--white); }
+.nav-links a:hover::after { transform: scaleX(1); }
+.nav-cta { background: var(--orange); color: #fff; text-decoration: none; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 10px 22px; border-radius: 6px; transition: background .2s, transform .15s; white-space: nowrap; }
+.nav-cta:hover { background: var(--org2); transform: translateY(-1px); }
+
+.hero { position: relative; min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 40px; padding: 88px 64px 120px; overflow: hidden; }
+.hero-content { position: relative; z-index: 2; }
+.hero-badge { display: inline-flex; align-items: center; gap: 9px; background: rgba(242,101,34,.08); border: 1px solid rgba(242,101,34,.22); border-radius: 100px; padding: 7px 18px 7px 12px; font-size: 12px; font-weight: 500; color: var(--dim2); letter-spacing: .04em; margin-bottom: 28px; animation: fadeUp .7s ease both; }
+.badge-dot { width: 7px; height: 7px; background: var(--orange); border-radius: 50%; flex-shrink: 0; animation: pulseRing 2s infinite; }
+.hero h1 { font-size: clamp(44px, 5.5vw, 80px); font-weight: 900; line-height: 1.0; letter-spacing: -.035em; animation: fadeUp .7s .1s ease both; }
+.hero h1 .acc { color: var(--orange); }
+.hero h1 .stk { color: var(--dim2); }
+.hero-sub { margin-top: 22px; font-size: 16px; font-weight: 400; line-height: 1.72; color: var(--dim2); max-width: 500px; animation: fadeUp .7s .2s ease both; }
+.hero-actions { margin-top: 38px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; animation: fadeUp .7s .3s ease both; }
+.btn-primary { background: var(--orange); color: #fff; text-decoration: none; font-size: 14px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 13px 28px; border-radius: 6px; border: none; cursor: none; transition: background .2s, transform .15s, box-shadow .2s; box-shadow: 0 4px 24px rgba(242,101,34,.28); }
+.btn-primary:hover { background: var(--org2); transform: translateY(-2px); box-shadow: 0 6px 40px rgba(242,101,34,.45); }
+.btn-ghost { color: var(--dim2); text-decoration: none; font-size: 14px; font-weight: 600; letter-spacing: .03em; display: inline-flex; align-items: center; gap: 8px; transition: color .2s, gap .2s; }
+.btn-ghost:hover { color: var(--white); gap: 14px; }
+
+.hero-visual { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; min-height: 400px; }
+.hero-grid-bg { position: absolute; inset: 0; background-image: linear-gradient(rgba(26,58,110,.18) 1px, transparent 1px), linear-gradient(90deg, rgba(26,58,110,.18) 1px, transparent 1px); background-size: 55px 55px; mask-image: radial-gradient(ellipse 75% 75% at 50% 50%, black 20%, transparent 100%); -webkit-mask-image: radial-gradient(ellipse 75% 75% at 50% 50%, black 20%, transparent 100%); }
+.orbit-wrap { position: relative; width: 360px; height: 360px; display: flex; align-items: center; justify-content: center; }
+.orbit { position: absolute; border-radius: 50%; border: 1px solid rgba(26,58,110,.5); }
+.o1 { width: 100%; height: 100%; animation: spin 28s linear infinite; }
+.o1::after { content: ''; position: absolute; top: -4px; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; background: var(--orange); border-radius: 50%; box-shadow: 0 0 12px var(--orange); }
+.o2 { width: 70%; height: 70%; border-style: dashed; border-color: rgba(26,58,110,.4); animation: spin 18s linear infinite reverse; }
+.o3 { width: 42%; height: 42%; border-color: rgba(242,101,34,.25); animation: spin 12s linear infinite; }
+.o3::after { content: ''; position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; background: rgba(242,101,34,.7); border-radius: 50%; }
+.shield-center { position: relative; z-index: 3; animation: float 4s ease-in-out infinite; }
+
+.hero-stats { position: absolute; bottom: 48px; left: 64px; z-index: 3; display: flex; gap: 44px; animation: fadeUp .7s .45s ease both; }
+.stat-num { font-size: 36px; font-weight: 900; letter-spacing: -.03em; line-height: 1; }
+.stat-num .acc { color: var(--orange); }
+.stat-label { font-size: 11px; font-weight: 500; color: var(--dim); letter-spacing: .08em; text-transform: uppercase; margin-top: 5px; }
+
+.marquee-wrap { overflow: hidden; padding: 15px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: rgba(255,255,255,.015); position: relative; z-index: 2; }
+.marquee-track { display: flex; width: max-content; animation: marquee 24s linear infinite; }
+.m-item { font-size: 11px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--dim); white-space: nowrap; padding: 0 36px; display: flex; align-items: center; gap: 12px; }
+.m-sep { color: var(--orange); font-size: 16px; line-height: 1; }
+
+section { position: relative; z-index: 2; }
+.s-label { display: flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--orange); margin-bottom: 14px; }
+.s-label::before { content: ''; width: 28px; height: 1px; background: var(--orange); flex-shrink: 0; }
+.s-title { font-size: clamp(30px, 3.5vw, 48px); font-weight: 800; line-height: 1.08; letter-spacing: -.03em; }
+.s-title .acc { color: var(--orange); }
+
+#servicios { padding: 110px 64px; }
+.services-hd { max-width: 600px; margin-bottom: 56px; }
+.services-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 18px; }
+.svc-card { background: var(--navy2); border: 1px solid var(--border); border-radius: 16px; padding: 42px; position: relative; overflow: hidden; transition: border-color .3s, transform .3s; }
+.svc-card:hover { border-color: rgba(242,101,34,.3); transform: translateY(-3px); }
+.svc-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--orange), transparent); transform: scaleX(0); transform-origin: left; transition: transform .4s; }
+.svc-card:hover::after { transform: scaleX(1); }
+.svc-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 26px; }
+.svc-num { font-family: 'Fira Code', monospace; font-size: 26px; font-weight: 500; color: var(--orange); letter-spacing: .02em; line-height: 1; }
+.svc-icon { width: 52px; height: 52px; background: rgba(242,101,34,.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .3s; }
+.svc-card:hover .svc-icon { background: rgba(242,101,34,.2); }
+.svc-icon svg { width: 26px; height: 26px; stroke: var(--orange); stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.svc-card h3 { font-size: 21px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 12px; }
+.svc-card p { font-size: 14.5px; line-height: 1.72; color: var(--dim2); }
+.svc-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 22px; }
+.svc-tag { font-size: 11px; font-weight: 600; letter-spacing: .04em; padding: 4px 11px; border-radius: 100px; background: rgba(255,255,255,.05); border: 1px solid var(--border); color: var(--dim); }
+
+#nosotros { padding: 100px 64px; background: rgba(18,34,68,.28); }
+.why-grid { display: grid; grid-template-columns: 280px 210px 1fr; gap: 48px; align-items: center; }
+.why-visual { position: relative; width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.why-rings { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.wring { position: absolute; border-radius: 50%; border: 1px solid; }
+.wring:nth-child(1) { width: 100%; height: 100%; border-color: rgba(242,101,34,.1); }
+.wring:nth-child(2) { width: 72%; height: 72%; border-color: rgba(242,101,34,.2); }
+.wring:nth-child(3) { width: 46%; height: 46%; border-color: rgba(242,101,34,.35); }
+.why-core { position: relative; z-index: 2; width: 100px; height: 100px; border-radius: 50%; background: rgba(242,101,34,.12); border: 2px solid var(--orange); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 50px rgba(242,101,34,.22), inset 0 0 28px rgba(242,101,34,.07); }
+.why-core svg { width: 38px; height: 38px; stroke: var(--orange); stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.why-chips-col { display: flex; flex-direction: column; gap: 16px; align-self: center; }
+.why-chip { background: rgba(7,16,31,.97); border: 1px solid rgba(242,101,34,.25); border-radius: 10px; padding: 12px 18px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(12px); white-space: nowrap; }
+.chip-dot { width: 7px; height: 7px; background: #22c55e; border-radius: 50%; flex-shrink: 0; animation: pulseRing 2.5s infinite; }
+.why-list { margin-top: 34px; display: flex; flex-direction: column; gap: 26px; }
+.why-item { display: flex; gap: 18px; align-items: flex-start; }
+.why-n { font-family: 'Fira Code', monospace; font-size: 26px; font-weight: 500; color: var(--orange); opacity: .25; line-height: 1; flex-shrink: 0; width: 36px; padding-top: 2px; }
+.why-item h4 { font-size: 16px; font-weight: 700; margin-bottom: 5px; }
+.why-item p { font-size: 14px; line-height: 1.7; color: var(--dim2); }
+
+#proceso { padding: 110px 64px; }
+.process-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; margin-top: 56px; position: relative; }
+.process-grid::before { content: ''; position: absolute; top: 29px; left: calc(12.5% + 30px); right: calc(12.5% + 30px); height: 2px; background: var(--orange); box-shadow: 0 0 10px rgba(242,101,34,.45); z-index: 0; }
+.proc-step { text-align: center; padding: 0 10px; position: relative; z-index: 1; }
+.proc-num { width: 60px; height: 60px; border-radius: 50%; background: var(--navy2); border: 2px solid var(--orange); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; color: var(--orange); margin: 0 auto 22px; transition: background .3s; box-shadow: 0 0 0 5px var(--navy); }
+.proc-step:hover .proc-num { background: rgba(242,101,34,.15); }
+.proc-step h4 { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+.proc-step p { font-size: 14px; line-height: 1.65; color: var(--dim2); }
+
+#clientes { padding: 100px 64px; background: rgba(255,255,255,.012); }
+.testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 56px; }
+.testi-card { background: var(--navy2); border: 1px solid var(--border); border-radius: 16px; padding: 32px; display: flex; flex-direction: column; transition: border-color .3s, transform .3s; }
+.testi-card:hover { border-color: rgba(242,101,34,.28); transform: translateY(-4px); }
+.testi-stars { display: flex; gap: 3px; margin-bottom: 16px; }
+.testi-stars span { color: var(--orange); font-size: 14px; }
+.testi-card blockquote { font-size: 14px; line-height: 1.75; color: var(--dim2); font-style: italic; font-weight: 300; flex: 1; }
+.testi-card blockquote::before { content: '\201C'; font-size: 38px; font-style: normal; font-weight: 900; color: var(--orange); line-height: 0; vertical-align: -15px; margin-right: 3px; display: inline-block; }
+.testi-author { display: flex; align-items: center; gap: 13px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
+.auth-av { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; background: linear-gradient(135deg, var(--blue), var(--orange)); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+.auth-name { font-size: 14px; font-weight: 700; }
+.auth-role { font-size: 12px; color: var(--dim); margin-top: 2px; }
+
+#contacto { padding: 110px 64px; }
+.contact-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 70px; align-items: start; }
+.contact-info .s-title { margin-bottom: 18px; }
+.contact-info > p { font-size: 15px; line-height: 1.72; color: var(--dim2); max-width: 400px; }
+.c-details { margin-top: 34px; display: flex; flex-direction: column; gap: 16px; }
+.c-row { display: flex; align-items: center; gap: 14px; }
+.c-ico { width: 42px; height: 42px; background: rgba(242,101,34,.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.c-ico svg { width: 18px; height: 18px; stroke: var(--orange); stroke-width: 1.75; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.c-row span { font-size: 14.5px; color: var(--dim2); }
+.cform { background: var(--navy2); border: 1px solid var(--border); border-radius: 18px; padding: 42px; }
+.frow { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+.fgroup { display: flex; flex-direction: column; gap: 7px; margin-bottom: 13px; }
+.fgroup label { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
+.fgroup input, .fgroup select, .fgroup textarea { background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px; color: var(--white); font-family: 'Outfit', sans-serif; font-size: 14px; outline: none; transition: border-color .2s, background .2s; -webkit-appearance: none; }
+.fgroup input:focus, .fgroup select:focus, .fgroup textarea:focus { border-color: var(--orange); background: rgba(242,101,34,.05); }
+.fgroup input::placeholder, .fgroup textarea::placeholder { color: var(--dim); }
+.fgroup select option { background: #0d1b30; }
+.fgroup textarea { resize: vertical; min-height: 96px; }
+.btn-submit { width: 100%; margin-top: 6px; background: var(--orange); color: #fff; border: none; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 15px; border-radius: 8px; cursor: none; transition: background .2s, transform .15s, box-shadow .2s; box-shadow: 0 4px 24px rgba(242,101,34,.22); }
+.btn-submit:hover { background: var(--org2); transform: translateY(-2px); box-shadow: 0 6px 40px rgba(242,101,34,.4); }
+
+footer { position: relative; z-index: 2; border-top: 1px solid var(--border); padding: 38px 64px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.foot-copy { font-size: 13px; color: var(--dim); }
+.foot-links { display: flex; gap: 26px; }
+.foot-links a { font-size: 13px; color: var(--dim); text-decoration: none; transition: color .2s; }
+.foot-links a:hover { color: var(--white); }
+
+.reveal { opacity: 0; transform: translateY(26px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+@keyframes fadeUp  { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
+@keyframes spin    { to { transform: rotate(360deg); } }
+@keyframes float   { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-12px); } }
+@keyframes marquee { to { transform: translateX(-50%); } }
+@keyframes pulseRing { 0%,100% { box-shadow: 0 0 0 0 rgba(242,101,34,.45); } 60% { box-shadow: 0 0 0 7px rgba(242,101,34,0); } }
+
+@media (max-width: 1100px) {
+  nav { padding: 16px 24px; }
+  nav.scrolled { padding: 12px 24px; }
+  .nav-links { display: none; }
+  .hero { grid-template-columns: 1fr; padding: 96px 24px 100px; }
+  .hero-visual { display: none; }
+  .hero-stats { left: 24px; bottom: 24px; gap: 26px; }
+  .stat-num { font-size: 28px; }
+  #servicios, #proceso, #contacto { padding: 72px 24px; }
+  #nosotros, #clientes { padding: 72px 24px; }
+  .services-grid { grid-template-columns: 1fr; }
+  .why-grid { grid-template-columns: 1fr; }
+  .why-visual { display: none; }
+  .why-chips-col { flex-direction: row; flex-wrap: wrap; }
+  .process-grid { grid-template-columns: repeat(2,1fr); }
+  .process-grid::before { display: none; }
+  .testi-grid { grid-template-columns: 1fr; }
+  .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+  .frow { grid-template-columns: 1fr; }
+  footer { flex-direction: column; text-align: center; padding: 30px 24px; }
+  .foot-links { flex-wrap: wrap; justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<div class="scroll-line" id="scrollLine"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">
+    <svg height="34" viewBox="0 0 148 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="9" cy="17" r="7" fill="#f26522"/>
+      <text x="24" y="26" font-family="Outfit,sans-serif" font-weight="800" font-size="26" fill="#eef2ff" letter-spacing="-0.5">MIND</text>
+    </svg>
+  </div>
+  <div class="nav-links">
+    <a href="#servicios">Servicios</a>
+    <a href="#nosotros">Nosotros</a>
+    <a href="#proceso">Proceso</a>
+    <a href="#clientes">Clientes</a>
+    <a href="#contacto">Contacto</a>
+  </div>
+  <a href="#contacto" class="nav-cta">Consulta gratis</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge"><span class="badge-dot"></span>Servicios disponibles &middot; Madrid &amp; remoto</div>
+    <h1>Protecci&#243;n<br><span class="acc">digital</span> para<br>tu <span class="stk">empresa</span></h1>
+    <p class="hero-sub">Ciberseguridad avanzada, desarrollo de software a medida, infraestructura IT e instalaciones de seguridad f&#237;sica. Una empresa. Todo lo que necesitas.</p>
+    <div class="hero-actions">
+      <a href="#servicios" class="btn-primary">Ver servicios</a>
+      <a href="#proceso" class="btn-ghost">C&#243;mo trabajamos <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="hero-grid-bg"></div>
+    <div class="orbit-wrap">
+      <div class="orbit o1"></div>
+      <div class="orbit o2"></div>
+      <div class="orbit o3"></div>
+      <div class="shield-center">
+        <svg width="128" height="146" viewBox="0 0 128 146" fill="none">
+          <path d="M64 6L11 28V72C11 102 33 128 64 140C95 128 117 102 117 72V28L64 6Z" stroke="rgba(26,58,110,.65)" stroke-width="1.5" fill="rgba(26,58,110,.12)"/>
+          <path d="M64 20L26 40V72C26 96 43 118 64 130C85 118 102 96 102 72V40L64 20Z" stroke="rgba(242,101,34,.35)" stroke-width="1" fill="rgba(242,101,34,.04)"/>
+          <circle cx="64" cy="72" r="20" stroke="#f26522" stroke-width="1.5" fill="rgba(242,101,34,.1)"/>
+          <path d="M55 72l7 7 12-13" stroke="#f26522" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div><div class="stat-num"><span class="n">99</span><span class="acc">%</span></div><div class="stat-label">Uptime garantizado</div></div>
+    <div><div class="stat-num"><span class="n">24</span><span class="acc">h</span></div><div class="stat-label">Soporte disponible</div></div>
+    <div><div class="stat-num"><span class="acc">+</span><span class="n">50</span></div><div class="stat-label">Clientes satisfechos</div></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="m-item">Ciberseguridad <span class="m-sep">&#215;</span></div>
+    <div class="m-item">Desarrollo de Software <span class="m-sep">&#215;</span></div>
+    <div class="m-item">Instalaciones de Seguridad <span class="m-sep">&#215;</span></div>
+    <div class="m-item">Consultor&#237;a IT <span class="m-sep">&#215;</span></div>
+    <div class="m-item">Redes &amp; Infraestructura <span class="m-sep">&#215;</span></div>
+    <div class="m-item">Soporte T&#233;cnico <span class="m-sep">&#215;</span></div>
+    <div class="m-item">CCTV &amp; Alarmas <span class="m-sep">&#215;</span></div>
+    <div class="m-item">Ciberseguridad <span class="m-sep">&#215;</span></div>
+    <div class="m-item">Desarrollo de Software <span class="m-sep">&#215;</span></div>
+    <div class="m-item">Instalaciones de Seguridad <span class="m-sep">&#215;</span></div>
+    <div class="m-item">Consultor&#237;a IT <span class="m-sep">&#215;</span></div>
+    <div class="m-item">Redes &amp; Infraestructura <span class="m-sep">&#215;</span></div>
+    <div class="m-item">Soporte T&#233;cnico <span class="m-sep">&#215;</span></div>
+    <div class="m-item">CCTV &amp; Alarmas <span class="m-sep">&#215;</span></div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="servicios">
+  <div class="services-hd reveal">
+    <div class="s-label">Nuestros Servicios</div>
+    <h2 class="s-title">Soluciones completas para <span class="acc">cada necesidad</span></h2>
+  </div>
+  <div class="services-grid">
+    <div class="svc-card reveal">
+      <div class="svc-top"><span class="svc-num">01</span><div class="svc-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div></div>
+      <h3>Ciberseguridad</h3>
+      <p>Protegemos tu empresa frente a amenazas digitales con auditor&#237;as, pentesting, monitorizaci&#243;n continua y respuesta ante incidentes. Defensa real, no solo en papel.</p>
+      <div class="svc-tags"><span class="svc-tag">Auditor&#237;a</span><span class="svc-tag">Pentesting</span><span class="svc-tag">SOC</span><span class="svc-tag">Firewall</span><span class="svc-tag">VPN</span></div>
+    </div>
+    <div class="svc-card reveal">
+      <div class="svc-top"><span class="svc-num">02</span><div class="svc-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><polyline points="9 8 12 11 15 8"/></svg></div></div>
+      <h3>Desarrollo de Software</h3>
+      <p>Aplicaciones web, m&#243;viles y de escritorio a medida. Desde sistemas de gesti&#243;n internos hasta plataformas de cara al cliente. C&#243;digo limpio, escalable y seguro.</p>
+      <div class="svc-tags"><span class="svc-tag">Web Apps</span><span class="svc-tag">APIs REST</span><span class="svc-tag">M&#243;vil</span><span class="svc-tag">ERP / CRM</span></div>
+    </div>
+    <div class="svc-card reveal">
+      <div class="svc-top"><span class="svc-num">03</span><div class="svc-icon"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg></div></div>
+      <h3>Inform&#225;tica &amp; IT</h3>
+      <p>Soporte t&#233;cnico, mantenimiento preventivo, redes, servidores y cloud. Tu infraestructura tecnol&#243;gica funcionando sin interrupciones con planes de soporte continuado.</p>
+      <div class="svc-tags"><span class="svc-tag">Redes</span><span class="svc-tag">Servidores</span><span class="svc-tag">Cloud</span><span class="svc-tag">Backup</span><span class="svc-tag">Helpdesk</span></div>
+    </div>
+    <div class="svc-card reveal">
+      <div class="svc-top"><span class="svc-num">04</span><div class="svc-icon"><svg viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></div></div>
+      <h3>Instalaciones de Seguridad</h3>
+      <p>Sistemas completos: videovigilancia CCTV, control de accesos, alarmas y detecci&#243;n de intrusi&#243;n. Integraci&#243;n total con gesti&#243;n digital centralizada.</p>
+      <div class="svc-tags"><span class="svc-tag">CCTV</span><span class="svc-tag">Control accesos</span><span class="svc-tag">Alarmas</span><span class="svc-tag">Dom&#243;tica</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY US -->
+<section id="nosotros">
+  <div class="why-grid">
+    <div class="why-visual reveal">
+      <div class="why-rings"><div class="wring"></div><div class="wring"></div><div class="wring"></div></div>
+      <div class="why-core"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+    </div>
+    <div class="why-chips-col reveal">
+      <div class="why-chip"><span class="chip-dot"></span>Monitorizaci&#243;n activa</div>
+      <div class="why-chip"><span class="chip-dot"></span>Sistemas instalados</div>
+      <div class="why-chip"><span class="chip-dot"></span>Soporte 24/7</div>
+    </div>
+    <div class="reveal">
+      <div class="s-label">Por qu&#233; MIND</div>
+      <h2 class="s-title">Tecnolog&#237;a y seguridad, <span class="acc">integradas</span></h2>
+      <div class="why-list">
+        <div class="why-item"><div class="why-n">01</div><div><h4>Enfoque integral</h4><p>Somos el &#250;nico proveedor que combina ciberseguridad, desarrollo de software e instalaciones f&#237;sicas bajo un mismo equipo coordinado.</p></div></div>
+        <div class="why-item"><div class="why-n">02</div><div><h4>Respuesta &#225;gil</h4><p>Tiempo de respuesta inferior a 4 horas en incidentes cr&#237;ticos. Equipo local con capacidad de intervenci&#243;n presencial cuando se necesita.</p></div></div>
+        <div class="why-item"><div class="why-n">03</div><div><h4>Sin letra peque&#241;a</h4><p>Presupuestos claros, plazos reales y comunicaci&#243;n directa. Trabajamos como si fu&#233;ramos parte de tu empresa.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="proceso">
+  <div class="reveal">
+    <div class="s-label">C&#243;mo trabajamos</div>
+    <h2 class="s-title">Proceso claro, <span class="acc">resultados medibles</span></h2>
+  </div>
+  <div class="process-grid reveal">
+    <div class="proc-step"><div class="proc-num">1</div><h4>Diagn&#243;stico</h4><p>Analizamos tu situaci&#243;n actual, identificamos vulnerabilidades y necesidades tecnol&#243;gicas sin compromiso.</p></div>
+    <div class="proc-step"><div class="proc-num">2</div><h4>Propuesta</h4><p>Dise&#241;amos una soluci&#243;n personalizada con presupuesto detallado y cronograma realista.</p></div>
+    <div class="proc-step"><div class="proc-num">3</div><h4>Implementaci&#243;n</h4><p>Ejecutamos con m&#237;nima disrupci&#243;n. Instalaciones, desarrollo y configuraciones con seguimiento continuo.</p></div>
+    <div class="proc-step"><div class="proc-num">4</div><h4>Mantenimiento</h4><p>Soporte continuo, actualizaciones y monitorizaci&#243;n para que todo funcione sin sorpresas.</p></div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="clientes">
+  <div class="reveal">
+    <div class="s-label">Testimonios</div>
+    <h2 class="s-title">Lo que dicen nuestros <span class="acc">clientes</span></h2>
+  </div>
+  <div class="testi-grid">
+    <div class="testi-card reveal">
+      <div class="testi-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+      <blockquote>Instalaron todo el sistema de c&#225;maras y alarma de nuestra nave en dos d&#237;as. Trabajo limpio y profesional. El software de gesti&#243;n a medida es exactamente lo que necesit&#225;bamos.</blockquote>
+      <div class="testi-author"><div class="auth-av">MR</div><div><div class="auth-name">Marcos Rodr&#237;guez</div><div class="auth-role">Director, LogiTrans SL</div></div></div>
+    </div>
+    <div class="testi-card reveal">
+      <div class="testi-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+      <blockquote>Despu&#233;s del ataque de ransomware que sufrimos, MIND hizo la auditor&#237;a y reforz&#243; toda nuestra seguridad. Llevamos m&#225;s de un a&#241;o sin incidentes. Muy profesionales.</blockquote>
+      <div class="testi-author"><div class="auth-av">AL</div><div><div class="auth-name">Ana L&#243;pez</div><div class="auth-role">CEO, Cl&#237;nica DentalPro</div></div></div>
+    </div>
+    <div class="testi-card reveal">
+      <div class="testi-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+      <blockquote>El desarrollo de la plataforma de gesti&#243;n para nuestro equipo comercial fue impecable. Cumplen plazos y el soporte posterior es excelente. Totalmente recomendables.</blockquote>
+      <div class="testi-author"><div class="auth-av">JP</div><div><div class="auth-name">Javier Pardo</div><div class="auth-role">Gerente, Grupo Inmobiliario Sur</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contacto">
+  <div class="contact-grid">
+    <div class="reveal">
+      <div class="s-label">Contacto</div>
+      <h2 class="s-title">Hablemos de tu <span class="acc">proyecto</span></h2>
+      <p>Primera consulta gratuita. Cu&#233;ntanos qu&#233; necesitas y te damos una propuesta sin compromiso.</p>
+      <div class="c-details">
+        <div class="c-row"><div class="c-ico"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.95 12 19.79 19.79 0 0 1 1.93 3.4 2 2 0 0 1 3.9 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><span>+34 600 000 000</span></div>
+        <div class="c-row"><div class="c-ico"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d2bbbcb4bd92bfbbbcb6ffa6b7b1bafcb7a1">[email&#160;protected]</a></span></div>
+        <div class="c-row"><div class="c-ico"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><span>Madrid &amp; alrededores &middot; Remoto en toda Espa&#241;a</span></div>
+      </div>
+    </div>
+    <div class="cform reveal">
+      <div class="frow">
+        <div class="fgroup"><label>Nombre</label><input type="text" placeholder="Tu nombre"></div>
+        <div class="fgroup"><label>Empresa</label><input type="text" placeholder="Opcional"></div>
+      </div>
+      <div class="fgroup"><label>Email</label><input type="email" placeholder="tu@email.com"></div>
+      <div class="fgroup">
+        <label>Servicio de inter&#233;s</label>
+        <select><option value="" disabled selected>Selecciona un servicio</option><option>Ciberseguridad</option><option>Desarrollo de Software</option><option>Inform&#225;tica &amp; IT</option><option>Instalaciones de Seguridad</option><option>Varios servicios</option></select>
+      </div>
+      <div class="fgroup"><label>Mensaje</label><textarea placeholder="Cu&#233;ntanos qu&#233; necesitas..."></textarea></div>
+      <button class="btn-submit" onclick="handleSubmit(this)">Enviar solicitud &#8594;</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <svg height="28" viewBox="0 0 148 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="9" cy="17" r="7" fill="#f26522"/>
+    <text x="24" y="26" font-family="Outfit,sans-serif" font-weight="800" font-size="26" fill="#eef2ff" letter-spacing="-0.5">MIND</text>
+  </svg>
+  <div class="foot-copy">&#169; 2025 MIND. Todos los derechos reservados.</div>
+  <div class="foot-links">
+    <a href="#servicios">Servicios</a>
+    <a href="#nosotros">Nosotros</a>
+    <a href="#contacto">Contacto</a>
+    <a href="#">Privacidad</a>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+var cursor = document.getElementById('cursor');
+var ring = document.getElementById('cursor-ring');
+var mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', function(e) { mx = e.clientX; my = e.clientY; cursor.style.left = mx + 'px'; cursor.style.top = my + 'px'; });
+(function loop() { rx += (mx - rx) * 0.13; ry += (my - ry) * 0.13; ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; requestAnimationFrame(loop); })();
+document.querySelectorAll('a, button, .svc-card, .testi-card').forEach(function(el) {
+  el.addEventListener('mouseenter', function() { cursor.style.width = '5px'; cursor.style.height = '5px'; ring.style.width = '46px'; ring.style.height = '46px'; });
+  el.addEventListener('mouseleave', function() { cursor.style.width = '10px'; cursor.style.height = '10px'; ring.style.width = '34px'; ring.style.height = '34px'; });
+});
+
+var scrollLine = document.getElementById('scrollLine');
+var navbar = document.getElementById('navbar');
+window.addEventListener('scroll', function() {
+  var pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  scrollLine.style.width = pct + '%';
+  if (window.scrollY > 60) { navbar.classList.add('scrolled'); } else { navbar.classList.remove('scrolled'); }
+});
+
+var io = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e, i) {
+    if (e.isIntersecting) { setTimeout(function() { e.target.classList.add('visible'); }, i * 65); io.unobserve(e.target); }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(function(el) { io.observe(el); });
+
+function handleSubmit(btn) {
+  btn.textContent = 'Solicitud enviada';
+  btn.style.background = '#16a34a';
+  btn.style.boxShadow = '0 4px 30px rgba(22,163,74,.35)';
+  setTimeout(function() { btn.textContent = 'Enviar solicitud \u2192'; btn.style.background = ''; btn.style.boxShadow = ''; }, 3500);
+}
+
+function countUp(el, target) {
+  var startTime = null;
+  function step(ts) {
+    if (!startTime) startTime = ts;
+    var p = Math.min((ts - startTime) / 1600, 1);
+    el.textContent = Math.floor((1 - Math.pow(1 - p, 3)) * target);
+    if (p < 1) { requestAnimationFrame(step); } else { el.textContent = target; }
+  }
+  requestAnimationFrame(step);
+}
+var sio = new IntersectionObserver(function(entries) {
+  if (!entries[0].isIntersecting) return;
+  var targets = [99, 24, 50];
+  document.querySelectorAll('.stat-num .n').forEach(fun
